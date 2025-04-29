@@ -2,8 +2,11 @@ package com.univacinas.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,4 +29,33 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public List<User> list() {
+        return userRepository.findAll();
+    }
+
+    public User findById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+    }
+
+    public User update(Long userId, UpdateUserRequest updateUserRequest) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+
+        if (updateUserRequest.getUsername() != null) user.setUsername(updateUserRequest.getUsername());
+        if (updateUserRequest.getName() != null) user.setName(updateUserRequest.getName());
+        if (updateUserRequest.getEmail() != null) user.setEmail(updateUserRequest.getEmail());
+        if (updateUserRequest.getPassword() != null) user.setPassword(updateUserRequest.getPassword());
+        if (updateUserRequest.getRole() != null) user.setRole(updateUserRequest.getRole());
+
+        return userRepository.save(user);
+    }
+
+    public void delete(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
 }
