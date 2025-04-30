@@ -24,6 +24,14 @@ public class SecurityConfig {
             .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             .and()
             .authorizeHttpRequests()
+            .requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-resources/**",
+                "/configuration/**",
+                "/webjars/**",
+                "/swagger-ui.html"
+            ).permitAll()
             .requestMatchers("/auth/**").permitAll()
             .anyRequest().authenticated()
             .and()

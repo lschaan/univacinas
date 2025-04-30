@@ -30,9 +30,9 @@ public class UserController {
         return ResponseEntity.ok(responseList);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long userId) {
-        User user = userService.findById(userId);
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
+        User user = userService.findById(id);
         return ResponseEntity.ok(UserResponse.from(user));
     }
 
@@ -42,17 +42,17 @@ public class UserController {
         return ResponseEntity.ok(UserResponse.from(user));
     }
 
-    @PatchMapping("/{userId}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @RequestBody UpdateUserRequest request) {
-        User user = userService.update(userId, request);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+        User user = userService.update(id, request);
         return ResponseEntity.ok(UserResponse.from(user));
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void deleteUser(@PathVariable Long userId) {
-        userService.delete(userId);
+    public void deleteUser(@PathVariable Long id) {
+        userService.delete(id);
     }
 
 }
