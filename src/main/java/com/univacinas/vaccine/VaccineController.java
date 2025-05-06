@@ -22,7 +22,7 @@ public class VaccineController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<Vaccine>> getVaccines() {
+    public ResponseEntity<List<Vaccine>> listVaccines() {
         return ResponseEntity.ok(List.of(new Vaccine()));
     }
 
