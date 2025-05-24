@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/appointment")
+@CrossOrigin
 @MockController
 public class AppointmentController {
 

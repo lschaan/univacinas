@@ -2,7 +2,6 @@ package com.univacinas.config;
 
 import com.univacinas.common.MockController;
 import io.swagger.v3.oas.models.Operation;
-import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

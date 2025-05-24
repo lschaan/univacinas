@@ -8,6 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/vaccine")
+@CrossOrigin
 @MockController
 public class VaccineController {
 
