@@ -8,12 +8,19 @@ import com.univacinas.user.User;
 import com.univacinas.user.UserService;
 import com.univacinas.vaccine.Vaccine;
 import com.univacinas.vaccine.VaccineService;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.management.Query;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -23,6 +30,7 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final UserService userService;
     private final VaccineService vaccineService;
+    private final CustomAppointmentRepository customAppointmentRepository;
 
     public Appointment createAppointment(CreateAppointmentRequest request) {
         log.info("Criando agendamento para request {}", request);
@@ -67,6 +75,10 @@ public class AppointmentService {
             .build();
 
         return appointmentRepository.save(appointment);
+    }
+
+    public List<Appointment> listAppointments(Optional<Long> patientId, Optional<AppointmentStatus> status) {
+        return customAppointmentRepository.findByOptionalFilters(patientId, status);
     }
 
     public void deleteAppointment(Long appointmentId) {

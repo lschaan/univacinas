@@ -1,6 +1,5 @@
 package com.univacinas.appointment;
 
-import com.univacinas.common.MockController;
 import com.univacinas.user.User;
 import com.univacinas.vaccine.Vaccine;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,7 @@ public class AppointmentController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Appointment>> listAppointments(@RequestParam Optional<Long> patientId, @RequestParam Optional<AppointmentStatus> status) {
-        return ResponseEntity.ok(List.of(mockAppointment()));
+        return ResponseEntity.ok(appointmentService.listAppointments(patientId, status));
     }
 
     @PostMapping("/cancel/{id}")
