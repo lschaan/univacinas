@@ -18,27 +18,32 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Appointment> createAppointment(@RequestBody CreateAppointmentRequest request) {
-        return ResponseEntity.ok(appointmentService.createAppointment(request));
+    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody CreateAppointmentRequest request) {
+        Appointment appointment = appointmentService.createAppointment(request);
+        return ResponseEntity.ok(AppointmentResponse.from(appointment));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Appointment> getAppointment(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.getAppointment(id));
+    public ResponseEntity<AppointmentResponse> getAppointment(@PathVariable Long id) {
+        Appointment appointment = appointmentService.getAppointment(id);
+        return ResponseEntity.ok(AppointmentResponse.from(appointment));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<Appointment>> listAppointments(@RequestParam Optional<Long> patientId, @RequestParam Optional<AppointmentStatus> status) {
-        return ResponseEntity.ok(appointmentService.listAppointments(patientId, status));
+    public ResponseEntity<List<AppointmentResponse>> listAppointments(@RequestParam Optional<Long> patientId, @RequestParam Optional<AppointmentStatus> status) {
+        List<Appointment> appointments = appointmentService.listAppointments(patientId, status);
+        return ResponseEntity.ok(appointments.stream().map(AppointmentResponse::from).toList());
     }
 
     @PostMapping("/cancel/{id}")
-    public ResponseEntity<Appointment> cancelAppointment(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.cancelAppointment(id));
+    public ResponseEntity<AppointmentResponse> cancelAppointment(@PathVariable Long id) {
+        Appointment appointment = appointmentService.cancelAppointment(id);
+        return ResponseEntity.ok(AppointmentResponse.from(appointment));
     }
 
     @PostMapping("/complete/{id}")
-    public ResponseEntity<Appointment> completeAppointment(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.completeAppointment(id));
+    public ResponseEntity<AppointmentResponse> completeAppointment(@PathVariable Long id) {
+        Appointment appointment = appointmentService.completeAppointment(id);
+        return ResponseEntity.ok(AppointmentResponse.from(appointment));
     }
 }
