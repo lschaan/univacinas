@@ -13,12 +13,17 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/appointment")
 @CrossOrigin
-@MockController
 public class AppointmentController {
+
+    private final AppointmentService appointmentService;
+
+    public AppointmentController(AppointmentService appointmentService) {
+        this.appointmentService = appointmentService;
+    }
 
     @PostMapping
     public ResponseEntity<Appointment> createAppointment(@RequestBody CreateAppointmentRequest request) {
-        return ResponseEntity.ok(mockAppointment());
+        return ResponseEntity.ok(appointmentService.createAppointment(request));
     }
 
     @GetMapping("/{id}")
@@ -41,13 +46,19 @@ public class AppointmentController {
         return ResponseEntity.ok(mockAppointment());
     }
 
+    //TODO: remover
+    @DeleteMapping("/{id}")
+    public void deleteAppointment(@PathVariable Long id) {
+        appointmentService.deleteAppointment(id);
+    }
+
     private Appointment mockAppointment() {
         return Appointment.builder()
             .patient(new User())
             .nurse(new User())
             .vaccine(new Vaccine())
             .creationDate(LocalDateTime.now())
-            .dateTime(LocalDateTime.now().plusDays(1L))
+//            .dateTime(LocalDateTime.now().plusDays(1L))
             .status(AppointmentStatus.SCHEDULED)
             .build();
     }

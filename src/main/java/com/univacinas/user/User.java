@@ -1,5 +1,6 @@
 package com.univacinas.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,17 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    public boolean isAdmin() {
+        return role.equals(UserRole.ADMIN);
+    }
+
+    public boolean isPatient() {
+        return role.equals(UserRole.PATIENT);
+    }
+
+    public boolean isNurse() {
+        return role.equals(UserRole.NURSE);
+    }
 
 }

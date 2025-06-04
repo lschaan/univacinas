@@ -3,7 +3,6 @@ package com.univacinas.appointment;
 import com.univacinas.user.User;
 import com.univacinas.vaccine.Vaccine;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,7 +34,9 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 
-    private LocalDateTime dateTime;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
+
     private LocalDateTime creationDate;
 
     @PrePersist

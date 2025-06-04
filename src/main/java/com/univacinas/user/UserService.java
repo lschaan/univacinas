@@ -1,9 +1,10 @@
 package com.univacinas.user;
 
+import com.univacinas.error.NoAvailableNurseException;
 import com.univacinas.error.UserAlreadyExistsException;
+import com.univacinas.error.UserNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,15 +44,15 @@ public class UserService {
     }
 
     public User findById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
     public User update(Long userId, UpdateUserRequest updateUserRequest) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+        User user = findById(userId);
 
         if (updateUserRequest.getUsername() != null) user.setUsername(updateUserRequest.getUsername());
         if (updateUserRequest.getName() != null) user.setName(updateUserRequest.getName());
@@ -64,6 +65,11 @@ public class UserService {
 
     public void delete(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    //TODO: tornar mais eficiente? Garantir que enfermeiro não possui agendamento no horário?
+    public User findNurse() {
+        return userRepository.findFirstByRole(UserRole.NURSE).orElseThrow(NoAvailableNurseException::new);
     }
 
 }

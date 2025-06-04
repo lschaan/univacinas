@@ -1,5 +1,6 @@
 package com.univacinas.vaccine;
 
+import com.univacinas.error.VaccineNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class VaccineService {
     }
 
     public Vaccine findById(Long id) {
-        return vaccineRepository.findById(id).orElseThrow(() -> new RuntimeException("Vacina não encontrada."));
+        return vaccineRepository.findById(id).orElseThrow(() -> new VaccineNotFoundException("Vacina não encontrada."));
     }
 
     public List<Vaccine> findAll() {

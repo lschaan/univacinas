@@ -27,4 +27,8 @@ public class Vaccine {
     private LocalDate expirationDate;
 
     private int amount;
+
+    public boolean hasStock() {
+        return amount > 0;
+    }
 }
