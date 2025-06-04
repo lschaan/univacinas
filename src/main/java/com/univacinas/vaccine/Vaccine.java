@@ -31,4 +31,8 @@ public class Vaccine {
     public boolean hasStock() {
         return amount > 0;
     }
+
+    public void reduceStock() {
+        amount--;
+    }
 }

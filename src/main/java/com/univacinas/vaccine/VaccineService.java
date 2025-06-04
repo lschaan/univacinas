@@ -47,4 +47,9 @@ public class VaccineService {
     public void delete(Long id) {
         vaccineRepository.deleteById(id);
     }
+
+    public Vaccine reduceStock(Vaccine vaccine) {
+        vaccine.reduceStock();
+        return vaccineRepository.save(vaccine);
+    }
 }

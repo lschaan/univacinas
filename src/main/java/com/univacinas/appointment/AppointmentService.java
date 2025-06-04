@@ -1,24 +1,16 @@
 package com.univacinas.appointment;
 
-import com.univacinas.error.InvalidAppointmentDateException;
-import com.univacinas.error.UserAlreadyHasAppointmentException;
-import com.univacinas.error.UserIsNotPatientException;
-import com.univacinas.error.VaccineOutOfStockException;
+import com.univacinas.error.*;
 import com.univacinas.user.User;
 import com.univacinas.user.UserService;
 import com.univacinas.vaccine.Vaccine;
 import com.univacinas.vaccine.VaccineService;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.management.Query;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +25,6 @@ public class AppointmentService {
     private final CustomAppointmentRepository customAppointmentRepository;
 
     public Appointment createAppointment(CreateAppointmentRequest request) {
-        log.info("Criando agendamento para request {}", request);
         User patient = userService.findById(request.getPatientId());
         if (!patient.isPatient()) {
             throw new UserIsNotPatientException();
@@ -57,8 +48,7 @@ public class AppointmentService {
             throw new InvalidAppointmentDateException("Horário de agendamento deve ser futuro.");
         }
 
-
-        boolean alreadyHasAppointment = appointmentRepository.existsAppointmentsByPatientAndStartDateTimeAndEndDateTime(patient, expectedStartDateTime, expectedEndDateTime);
+        boolean alreadyHasAppointment = appointmentRepository.existsAppointmentsByPatientAndStartDateTimeAndEndDateTimeAndStatus(patient, expectedStartDateTime, expectedEndDateTime, AppointmentStatus.SCHEDULED);
         if (alreadyHasAppointment) {
             throw new UserAlreadyHasAppointmentException();
         }
@@ -83,5 +73,37 @@ public class AppointmentService {
 
     public void deleteAppointment(Long appointmentId) {
         appointmentRepository.deleteById(appointmentId);
+    }
+
+    public Appointment getAppointment(Long appointmentId) {
+        return appointmentRepository.findById(appointmentId).orElseThrow(AppointmentNotFoundException::new);
+    }
+
+    public Appointment cancelAppointment(Long appointmentId) {
+        Appointment appointment = getAppointment(appointmentId);
+
+        if (appointment.getStatus() != AppointmentStatus.SCHEDULED) {
+            throw new InvalidAppointmentStatusException();
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        return appointmentRepository.save(appointment);
+    }
+
+    public Appointment completeAppointment(Long appointmentId) {
+        Appointment appointment = getAppointment(appointmentId);
+
+        if (appointment.getStatus() != AppointmentStatus.SCHEDULED) {
+            throw new InvalidAppointmentStatusException();
+        }
+
+        if (!appointment.getVaccine().hasStock()) {
+            throw new VaccineOutOfStockException("Vacina sem estoque para encerramento de consulta agendada.");
+        }
+
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointment.setVaccine(vaccineService.reduceStock(appointment.getVaccine()));
+
+        return appointmentRepository.save(appointment);
     }
 }

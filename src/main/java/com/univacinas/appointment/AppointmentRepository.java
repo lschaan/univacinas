@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    boolean existsAppointmentsByPatientAndStartDateTimeAndEndDateTime(User patient, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    boolean existsAppointmentsByPatientAndStartDateTimeAndEndDateTimeAndStatus(User patient, LocalDateTime startDateTime, LocalDateTime endDateTime, AppointmentStatus status);
 
     List<Appointment> findAppointmentByPatient_Id(Long patientId);
 }
