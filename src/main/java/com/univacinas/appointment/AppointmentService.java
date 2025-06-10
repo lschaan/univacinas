@@ -71,10 +71,6 @@ public class AppointmentService {
         return customAppointmentRepository.findByOptionalFilters(patientId, status);
     }
 
-    public void deleteAppointment(Long appointmentId) {
-        appointmentRepository.deleteById(appointmentId);
-    }
-
     public Appointment getAppointment(Long appointmentId) {
         return appointmentRepository.findById(appointmentId).orElseThrow(AppointmentNotFoundException::new);
     }

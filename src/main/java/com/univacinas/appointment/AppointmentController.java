@@ -1,6 +1,7 @@
 package com.univacinas.appointment;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class AppointmentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ATTENDANT', 'ADMIN')")
     public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody CreateAppointmentRequest request) {
         Appointment appointment = appointmentService.createAppointment(request);
         return ResponseEntity.ok(AppointmentResponse.from(appointment));
@@ -36,12 +38,14 @@ public class AppointmentController {
     }
 
     @PostMapping("/cancel/{id}")
+    @PreAuthorize("hasAnyRole('ATTENDANT', 'ADMIN', 'NURSE')")
     public ResponseEntity<AppointmentResponse> cancelAppointment(@PathVariable Long id) {
         Appointment appointment = appointmentService.cancelAppointment(id);
         return ResponseEntity.ok(AppointmentResponse.from(appointment));
     }
 
     @PostMapping("/complete/{id}")
+    @PreAuthorize("hasAnyRole('ATTENDANT', 'ADMIN', 'NURSE')")
     public ResponseEntity<AppointmentResponse> completeAppointment(@PathVariable Long id) {
         Appointment appointment = appointmentService.completeAppointment(id);
         return ResponseEntity.ok(AppointmentResponse.from(appointment));

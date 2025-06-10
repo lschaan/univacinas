@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,9 @@ public class UserService {
     }
 
     public List<User> list() {
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+        users.sort(Comparator.comparing(User::getId));
+        return users;
     }
 
     public User findById(Long userId) {
