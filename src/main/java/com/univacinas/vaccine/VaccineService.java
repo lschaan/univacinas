@@ -1,15 +1,11 @@
 package com.univacinas.vaccine;
 
 import com.univacinas.error.VaccineNotFoundException;
-import com.univacinas.report.ManufacturerBreakdown;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.IntSummaryStatistics;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -58,67 +54,5 @@ public class VaccineService {
     public Vaccine reduceStock(Vaccine vaccine) {
         vaccine.reduceStock();
         return vaccineRepository.save(vaccine);
-    }
-
-    public List<ManufacturerBreakdown> getManufacturerBreakdown(LocalDate from, LocalDate to) {
-        List<Vaccine> vaccines = vaccineRepository.findAllByCreationDateBetween(from, to);
-        return getManufacturerBreakdown(vaccines);
-    }
-
-    public List<ManufacturerBreakdown> getManufacturerBreakdown(LocalDate from, LocalDate to, String manufacturer) {
-        List<Vaccine> vaccines = vaccineRepository.findAllByManufacturerAndCreationDateBetween(manufacturer, from, to);
-        return getManufacturerBreakdown(vaccines);
-    }
-
-    private List<ManufacturerBreakdown> getManufacturerBreakdown(List<Vaccine> vaccines) {
-        return vaccines.stream()
-            .collect(Collectors.groupingBy(Vaccine::getManufacturer, Collectors.summarizingInt(Vaccine::getAmount)))
-            .entrySet()
-            .stream()
-            .map(e -> {
-                IntSummaryStatistics stats = e.getValue();
-                return new ManufacturerBreakdown(e.getKey(), stats.getSum(), stats.getCount());
-            })
-            .toList();
-    }
-
-    public long countVaccines(LocalDate from, LocalDate to) {
-        return vaccineRepository.countByCreationDateBetween(from, to);
-    }
-
-    public long countVaccines(LocalDate from, LocalDate to, String manufacturer) {
-        return vaccineRepository.countByCreationDateBetweenAndManufacturer(from, to, manufacturer);
-    }
-
-    public long countDistinctVaccinesByName(LocalDate from, LocalDate to) {
-        return vaccineRepository.countDistinctNamesByCreationDateBetween(from, to);
-    }
-
-    public long countDistinctVaccinesByName(LocalDate from, LocalDate to, String manufacturer) {
-        return vaccineRepository.countDistinctNamesByCreationDateBetweenAndManufacturer(from, to, manufacturer);
-    }
-
-    public long countExpiredVaccines(LocalDate from, LocalDate to) {
-        return vaccineRepository.countByExpirationDateBeforeAndCreationDateBetween(LocalDate.now(), from, to);
-    }
-
-    public long countExpiredVaccines(LocalDate from, LocalDate to, String manufacturer) {
-        return vaccineRepository.countByExpirationDateBeforeAndCreationDateBetweenAndManufacturer(LocalDate.now(), from, to, manufacturer);
-    }
-
-    public long countNearExpiryVaccines(LocalDate from, LocalDate to) {
-        return vaccineRepository.countByExpirationDateBetweenAndCreationDateBetween(LocalDate.now(), LocalDate.now().plusWeeks(1L), from, to);
-    }
-
-    public long countNearExpiryVaccines(LocalDate from, LocalDate to, String manufacturer) {
-        return vaccineRepository.countByExpirationDateBetweenAndCreationDateBetweenAndManufacturer(LocalDate.now(), LocalDate.now().plusWeeks(1L), from, to, manufacturer);
-    }
-
-    public long countLowAmountVaccines(LocalDate from, LocalDate to) {
-        return vaccineRepository.countByAmountLessThanEqualAndCreationDateBetween(10, from, to);
-    }
-
-    public long countLowAmountVaccines(LocalDate from, LocalDate to, String manufacturer) {
-        return vaccineRepository.countByAmountLessThanEqualAndCreationDateBetweenAndManufacturer(10, from, to, manufacturer);
     }
 }

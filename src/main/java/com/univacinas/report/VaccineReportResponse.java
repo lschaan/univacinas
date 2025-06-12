@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -14,7 +15,10 @@ import java.util.List;
 @Builder
 public class VaccineReportResponse {
 
-    private LocalDate generatedAt;
+    private LocalDateTime generatedAt;
+
+    private LocalDate from;
+    private LocalDate to;
 
     private long totalVaccines;
     private long distinctVaccineNames;

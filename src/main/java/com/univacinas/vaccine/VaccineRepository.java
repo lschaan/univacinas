@@ -1,5 +1,6 @@
 package com.univacinas.vaccine;
 
+import com.univacinas.report.ManufacturerBreakdown;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -10,32 +11,30 @@ import java.util.List;
 @Repository
 public interface VaccineRepository extends JpaRepository<Vaccine, Long> {
 
-    long countByCreationDateBetween(LocalDate from, LocalDate to);
-
     @Query("""
-          SELECT COUNT(DISTINCT v.name)
+          SELECT new com.univacinas.vaccine.VaccineStats(
+            COUNT(v),
+            COUNT(DISTINCT v.name),
+            SUM(CASE WHEN v.expirationDate < :today THEN 1 ELSE 0 END),
+            SUM(CASE WHEN v.expirationDate BETWEEN :today AND :todayPlus7 THEN 1 ELSE 0 END),
+            SUM(CASE WHEN v.amount <= :lowThreshold THEN 1 ELSE 0 END)
+          )
           FROM Vaccine v
           WHERE v.creationDate BETWEEN :from AND :to
+            AND (:manufacturer IS NULL OR v.manufacturer = :manufacturer)
         """)
-    long countDistinctNamesByCreationDateBetween(LocalDate from, LocalDate to);
+    VaccineStats fetchStats(LocalDate from, LocalDate to, String manufacturer, LocalDate today, LocalDate todayPlus7, int lowThreshold);
 
-    long countByExpirationDateBeforeAndCreationDateBetween(LocalDate date, LocalDate from, LocalDate to);
-
-    long countByExpirationDateBetweenAndCreationDateBetween(LocalDate startDate, LocalDate endDate, LocalDate from, LocalDate to);
-
-    long countByAmountLessThanEqualAndCreationDateBetween(int amount, LocalDate from, LocalDate to);
-
-    List<Vaccine> findAllByManufacturerAndCreationDateBetween(String manufacturer, LocalDate from, LocalDate to);
-
-    long countByCreationDateBetweenAndManufacturer(LocalDate creationDateAfter, LocalDate creationDateBefore, String manufacturer);
-
-    long countDistinctNamesByCreationDateBetweenAndManufacturer(LocalDate creationDateAfter, LocalDate creationDateBefore, String manufacturer);
-
-    long countByExpirationDateBeforeAndCreationDateBetweenAndManufacturer(LocalDate expirationDateBefore, LocalDate creationDateAfter, LocalDate creationDateBefore, String manufacturer);
-
-    long countByExpirationDateBetweenAndCreationDateBetweenAndManufacturer(LocalDate expirationDateAfter, LocalDate expirationDateBefore, LocalDate creationDateAfter, LocalDate creationDateBefore, String manufacturer);
-
-    long countByAmountLessThanEqualAndCreationDateBetweenAndManufacturer(int amountIsLessThan, LocalDate creationDateAfter, LocalDate creationDateBefore, String manufacturer);
-
-    List<Vaccine> findAllByCreationDateBetween(LocalDate creationDateAfter, LocalDate creationDateBefore);
+    @Query("""
+          SELECT new com.univacinas.report.ManufacturerBreakdown(
+            v.manufacturer,
+            SUM(v.amount),
+            COUNT(v)
+          )
+          FROM Vaccine v
+          WHERE v.creationDate BETWEEN :from AND :to
+            AND (:manufacturer IS NULL OR v.manufacturer = :manufacturer)
+          GROUP BY v.manufacturer
+        """)
+    List<ManufacturerBreakdown> fetchBreakdown(LocalDate from, LocalDate to, String manufacturer);
 }

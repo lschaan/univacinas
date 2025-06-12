@@ -1,62 +1,34 @@
 package com.univacinas.report;
 
-import com.univacinas.vaccine.VaccineService;
+import com.univacinas.vaccine.VaccineRepository;
+import com.univacinas.vaccine.VaccineStats;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class VaccineReportService {
 
-    private final VaccineService vaccineService;
+    private final VaccineRepository vaccineRepository;
 
-    public VaccineReportResponse getVaccineReport(LocalDate from, LocalDate to, Optional<String> manufacturer) {
-        if (manufacturer.isPresent()) {
-            return getReportByManufacturer(from, to, manufacturer.get());
-        }
-
-        long totalVaccines = vaccineService.countVaccines(from, to);
-        long distinctVaccineNames = vaccineService.countDistinctVaccinesByName(from, to);
-
-        long expiredCount = vaccineService.countExpiredVaccines(from, to);
-        long nearExpiryCount = vaccineService.countNearExpiryVaccines(from, to);
-        long lowAmountCount = vaccineService.countLowAmountVaccines(from, to);
-
-        List<ManufacturerBreakdown> byManufacturer = vaccineService.getManufacturerBreakdown(from, to);
+    public VaccineReportResponse getVaccineReport(LocalDate from, LocalDate to, String manufacturer) {
+        VaccineStats stats = vaccineRepository.fetchStats(from, to, manufacturer, LocalDate.now(), LocalDate.now().plusWeeks(1), 10);
+        List<ManufacturerBreakdown> breakdown = vaccineRepository.fetchBreakdown(from, to, manufacturer);
 
         return VaccineReportResponse.builder()
-            .generatedAt(LocalDate.now())
-            .totalVaccines(totalVaccines)
-            .distinctVaccineNames(distinctVaccineNames)
-            .expiredCount(expiredCount)
-            .nearExpiryCount(nearExpiryCount)
-            .lowAmountCount(lowAmountCount)
-            .byManufacturer(byManufacturer)
-            .build();
-    }
-
-    private VaccineReportResponse getReportByManufacturer(LocalDate from, LocalDate to, String manufacturer) {
-        long totalVaccines = vaccineService.countVaccines(from, to, manufacturer);
-        long distinctVaccineNames = vaccineService.countDistinctVaccinesByName(from, to, manufacturer);
-
-        long expiredCount = vaccineService.countExpiredVaccines(from, to, manufacturer);
-        long nearExpiryCount = vaccineService.countNearExpiryVaccines(from, to, manufacturer);
-        long lowAmountCount = vaccineService.countLowAmountVaccines(from, to, manufacturer);
-
-        List<ManufacturerBreakdown> byManufacturer = vaccineService.getManufacturerBreakdown(from, to, manufacturer);
-
-        return VaccineReportResponse.builder()
-            .generatedAt(LocalDate.now())
-            .totalVaccines(totalVaccines)
-            .distinctVaccineNames(distinctVaccineNames)
-            .expiredCount(expiredCount)
-            .nearExpiryCount(nearExpiryCount)
-            .lowAmountCount(lowAmountCount)
-            .byManufacturer(byManufacturer)
+            .generatedAt(LocalDateTime.now())
+            .from(from)
+            .to(to)
+            .totalVaccines(stats.getTotal())
+            .distinctVaccineNames(stats.getDistinctNames())
+            .expiredCount(stats.getExpired())
+            .nearExpiryCount(stats.getNearExpiry())
+            .lowAmountCount(stats.getLowAmount())
+            .byManufacturer(breakdown)
             .build();
     }
 }
