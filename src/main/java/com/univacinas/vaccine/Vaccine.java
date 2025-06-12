@@ -28,11 +28,18 @@ public class Vaccine {
 
     private int amount;
 
+    private LocalDate creationDate;
+
     public boolean hasStock() {
         return amount > 0;
     }
 
     public void reduceStock() {
         amount--;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.creationDate = LocalDate.now();
     }
 }

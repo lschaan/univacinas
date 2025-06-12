@@ -1,19 +1,20 @@
 package com.univacinas.report;
 
-import com.univacinas.common.MockController;
+import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/report")
 @CrossOrigin
-@MockController
+@AllArgsConstructor
 public class ReportController {
+
+    private final VaccineReportService vaccineReportService;
 
     @GetMapping("/vaccines")
     public ResponseEntity<VaccineReportResponse> getVaccineReport(
@@ -21,6 +22,6 @@ public class ReportController {
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
         @RequestParam Optional<String> manufacturer
     ) {
-        return ResponseEntity.ok(VaccineReportResponse.builder().byManufacturer(List.of(new ManufacturerBreakdown())).build());
+        return ResponseEntity.ok(vaccineReportService.getVaccineReport(from, to, manufacturer));
     }
 }

@@ -16,12 +16,12 @@ public class VaccineReportResponse {
 
     private LocalDate generatedAt;
 
-    private int totalVaccines;
-    private int distinctVaccineNames;
+    private long totalVaccines;
+    private long distinctVaccineNames;
 
-    private int expiredCount;
-    private int nearExpiryCount;
-    private int lowAmountCount;
+    private long expiredCount;
+    private long nearExpiryCount;
+    private long lowAmountCount;
 
     private List<ManufacturerBreakdown> byManufacturer;
 }
