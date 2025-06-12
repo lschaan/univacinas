@@ -18,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ATTENDANT')")
     public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest request) {
         User user = userService.create(request);
         return ResponseEntity.ok(UserResponse.from(user));
@@ -44,14 +44,14 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ATTENDANT')")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
         User user = userService.update(id, request);
         return ResponseEntity.ok(UserResponse.from(user));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ATTENDANT')")
     public void deleteUser(@PathVariable Long id) {
         userService.delete(id);
     }
