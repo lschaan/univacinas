@@ -15,9 +15,9 @@ public interface VaccineRepository extends JpaRepository<Vaccine, Long> {
           SELECT new com.univacinas.vaccine.VaccineStats(
             COUNT(v),
             COUNT(DISTINCT v.name),
-            SUM(CASE WHEN v.expirationDate < :today THEN 1 ELSE 0 END),
-            SUM(CASE WHEN v.expirationDate BETWEEN :today AND :todayPlus7 THEN 1 ELSE 0 END),
-            SUM(CASE WHEN v.amount <= :lowThreshold THEN 1 ELSE 0 END)
+            COALESCE(SUM(CASE WHEN v.expirationDate < :today THEN 1 ELSE 0 END), 0),
+            COALESCE(SUM(CASE WHEN v.expirationDate BETWEEN :today AND :todayPlus7 THEN 1 ELSE 0 END), 0),
+            COALESCE(SUM(CASE WHEN v.amount <= :lowThreshold THEN 1 ELSE 0 END), 0)
           )
           FROM Vaccine v
           WHERE v.creationDate BETWEEN :from AND :to
