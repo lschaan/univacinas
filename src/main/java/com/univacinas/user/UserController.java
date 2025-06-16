@@ -2,7 +2,6 @@ package com.univacinas.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,35 +18,29 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'ATTENDANT')")
-    public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest request) {
-        User user = userService.create(request);
-        return ResponseEntity.ok(UserResponse.from(user));
+    public UserResponse createUser(@RequestBody CreateUserRequest request) {
+        return UserResponse.from(userService.create(request));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<UserResponse>> getUsers() {
-        List<User> userList = userService.list();
-        List<UserResponse> responseList = userList.stream().map(UserResponse::from).toList();
-        return ResponseEntity.ok(responseList);
+    public List<UserResponse> getUsers() {
+        return userService.list().stream().map(UserResponse::from).toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
-        User user = userService.findById(id);
-        return ResponseEntity.ok(UserResponse.from(user));
+    public UserResponse getUser(@PathVariable Long id) {
+        return UserResponse.from(userService.findById(id));
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<UserResponse> getUserByUsername(@PathVariable String username) {
-        User user = userService.findByUsername(username);
-        return ResponseEntity.ok(UserResponse.from(user));
+    public UserResponse getUserByUsername(@PathVariable String username) {
+        return UserResponse.from(userService.findByUsername(username));
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'ATTENDANT')")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
-        User user = userService.update(id, request);
-        return ResponseEntity.ok(UserResponse.from(user));
+    public UserResponse updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+        return UserResponse.from(userService.update(id, request));
     }
 
     @DeleteMapping("/{id}")

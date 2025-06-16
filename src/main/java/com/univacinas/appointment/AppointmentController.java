@@ -1,6 +1,5 @@
 package com.univacinas.appointment;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,34 +19,29 @@ public class AppointmentController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ATTENDANT', 'ADMIN')")
-    public ResponseEntity<AppointmentResponse> createAppointment(@RequestBody CreateAppointmentRequest request) {
-        Appointment appointment = appointmentService.createAppointment(request);
-        return ResponseEntity.ok(AppointmentResponse.from(appointment));
+    public AppointmentResponse createAppointment(@RequestBody CreateAppointmentRequest request) {
+        return AppointmentResponse.from(appointmentService.createAppointment(request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AppointmentResponse> getAppointment(@PathVariable Long id) {
-        Appointment appointment = appointmentService.getAppointment(id);
-        return ResponseEntity.ok(AppointmentResponse.from(appointment));
+    public AppointmentResponse getAppointment(@PathVariable Long id) {
+        return AppointmentResponse.from(appointmentService.getAppointment(id));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<AppointmentResponse>> listAppointments(@RequestParam Optional<Long> patientId, @RequestParam Optional<AppointmentStatus> status) {
-        List<Appointment> appointments = appointmentService.listAppointments(patientId, status);
-        return ResponseEntity.ok(appointments.stream().map(AppointmentResponse::from).toList());
+    public List<AppointmentResponse> listAppointments(@RequestParam Optional<Long> patientId, @RequestParam Optional<AppointmentStatus> status) {
+        return appointmentService.listAppointments(patientId, status).stream().map(AppointmentResponse::from).toList();
     }
 
     @PostMapping("/cancel/{id}")
     @PreAuthorize("hasAnyRole('ATTENDANT', 'ADMIN', 'NURSE')")
-    public ResponseEntity<AppointmentResponse> cancelAppointment(@PathVariable Long id) {
-        Appointment appointment = appointmentService.cancelAppointment(id);
-        return ResponseEntity.ok(AppointmentResponse.from(appointment));
+    public AppointmentResponse cancelAppointment(@PathVariable Long id) {
+        return AppointmentResponse.from(appointmentService.cancelAppointment(id));
     }
 
     @PostMapping("/complete/{id}")
     @PreAuthorize("hasAnyRole('ATTENDANT', 'ADMIN', 'NURSE')")
-    public ResponseEntity<AppointmentResponse> completeAppointment(@PathVariable Long id) {
-        Appointment appointment = appointmentService.completeAppointment(id);
-        return ResponseEntity.ok(AppointmentResponse.from(appointment));
+    public AppointmentResponse completeAppointment(@PathVariable Long id) {
+        return AppointmentResponse.from(appointmentService.completeAppointment(id));
     }
 }
